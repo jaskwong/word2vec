@@ -70,8 +70,3 @@ def remove_stopwords(df):
     stopwords = nltk.corpus.stopwords.words('english')
     df[TOKENS] = df[TOKENS].map(lambda t: list(filter(lambda t: t not in stopwords, t)))
     return df
-    
-    
-if __name__ == '__main__':
-    df = process_data()
-    get_meta_data(df)
