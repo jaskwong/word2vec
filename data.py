@@ -25,21 +25,23 @@ TOKENS = 'tokens'
 WORD_TO_ID = 'word_to_id'
 ID_TO_WORD = 'id_to_word'
 
-
-def process_data():
+def read_data():
     files = glob.glob('data/*.csv')
-
+    
     print(f'Files to read: {files}')
 
     df = pd.concat((pd.read_csv(f) for f in files), ignore_index=True)
+    return df
 
+def process_data(df):
     df_tokens = df \
         .sort_values([TRACK_TITLE, LINE], ascending=[True, True]) \
         .groupby(TRACK_TITLE) \
         .agg({LYRIC: ' '.join}) \
         .reset_index() \
         .pipe(tokenize) \
-        .pipe(remove_stopwords)
+        .pipe(remove_stopwords) \
+        .filter([TOKENS])
     
     print(f'Tokenized and removed stopwords for {df_tokens.shape[0]} records')
     return df_tokens
@@ -47,7 +49,8 @@ def process_data():
 def get_meta_data(df):
     all_tokens = pd.Series(itertools.chain.from_iterable(df[TOKENS].tolist()))
     unique = all_tokens.unique()
-    word_to_id = dict(enumerate(unique))
+    id_to_word = dict(enumerate(unique))
+    word_to_id = {v: k for k, v in id_to_word.items()}
 
     vocab_size = len(word_to_id)
     corpus_size = len(all_tokens)
