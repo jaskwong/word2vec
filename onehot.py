@@ -14,7 +14,7 @@ def generate_training_data(df, vocab_size, word_to_id, window_size):
             context_vector = generate_context_vector(vocab_size, word_to_id, tokens[window_start:window_end], token)
             x.append(context_vector)
 
-    return np.array([x, y])
+    return np.array(x), np.array(y)
 
 def generate_target_vector(vocab_size, word_to_id, word):
     vec = np.zeros(vocab_size)
@@ -25,7 +25,7 @@ def generate_context_vector(vocab_size, word_to_id, context_words, target_word):
     vec = np.zeros(vocab_size)
     
     for word in context_words:
-        vec[word_to_id[word]] += + 1
+        vec[word_to_id[word]] += 1
 
     vec[word_to_id[target_word]] -= 1
     return vec

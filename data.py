@@ -36,9 +36,6 @@ def read_data():
 def process_data(df):
     df_tokens = df \
         .sort_values([TRACK_TITLE, LINE], ascending=[True, True]) \
-        .groupby(TRACK_TITLE) \
-        .agg({LYRIC: ' '.join}) \
-        .reset_index() \
         .pipe(tokenize) \
         .pipe(remove_stopwords) \
         .filter([TOKENS])

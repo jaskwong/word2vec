@@ -43,7 +43,7 @@ class TestMain(unittest.TestCase):
         """Training data is correctly generated'"""
         
         df_tokens = pd.DataFrame([[['best', 'way', 'to', 'success', 'is', 'through', 'hardwork', 'and', 'persistence', 'and', 'attitude']]], columns=['tokens'])
-        training_data = onehot.generate_training_data(df_tokens, self.vocab_size, self.word_to_id, 2)
+        x, y = onehot.generate_training_data(df_tokens, self.vocab_size, self.word_to_id, 2)
 
         expected_x = [[0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
                       [1, 0, 1, 1, 0, 0, 0, 0, 0, 0],
@@ -69,6 +69,6 @@ class TestMain(unittest.TestCase):
                       [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
 
-        self.assertListEqual(training_data[0].tolist(), expected_x)
-        self.assertListEqual(training_data[1].tolist(), expected_y)
+        self.assertListEqual(x.tolist(), expected_x)
+        self.assertListEqual(y.tolist(), expected_y)
             
