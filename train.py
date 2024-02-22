@@ -12,8 +12,9 @@ class Model:
 def train(X, y, iterations, alpha, hidden_dimensions):
     model = init(X, hidden_dimensions)
     for _ in range(0, iterations):
-        backward(model, X, y, alpha)
-    return model
+        a1, a2, z, embeddings = forward(model, X)
+        backward(model, a1, z, X, y, alpha)
+    return embeddings, model
 
 def predict(model, X):
     a1 = np.dot(X, model.w1)
@@ -21,6 +22,12 @@ def predict(model, X):
     z = softmax(a2)
 
     return z
+
+def encode(model, v):
+    a1 = np.dot(v, model.w1)
+    a2 = np.dot(v, model.w2)
+
+    return a2
 
 def init(X, hidden_dimensions):
     model = Model()
@@ -31,10 +38,9 @@ def forward(model, X):
     a1 = np.dot(X, model.w1)
     a2 = np.dot(a1, model.w2)
     z = softmax(a2)
-    return np.array(a1), np.array(a2), np.array(z)
+    return np.array(a1), np.array(a2), np.array(z), a2
 
-def backward(model, X, y, alpha):
-    a1, a2, z = forward(model, X)
+def backward(model, a1, z, X, y, alpha):
     da2 = z - y
     dw2 = np.dot(a1.T, da2)
     da1 = np.dot(da2, model.w2.T)
@@ -52,5 +58,6 @@ def cross_entropy(z, y):
 def softmax(U):
     ret = []
     for u in U:
-        ret.append(np.exp(u) / np.sum(np.exp(u)))
+        max = np.max(u)
+        ret.append(np.exp(u - max) / np.sum(np.exp(u - max)))
     return ret

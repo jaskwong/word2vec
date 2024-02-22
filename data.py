@@ -20,28 +20,37 @@ TRACK_N = 'track_n'
 LYRIC = 'lyric'
 LINE = 'line'
 
+WIKIPEDIA_ID = 'wikipedia_id'
+FREEBASE_ID = 'freebase_id'
+TITLE = 'title'
+AUTHOR = 'author'
+PUBLICATION_DATE = 'publication_date'
+GENRE = 'genre'
+SUMMARY = 'summary'
+
 # derived fields
 TOKENS = 'tokens'
 WORD_TO_ID = 'word_to_id'
 ID_TO_WORD = 'id_to_word'
 
-def read_data():
-    files = glob.glob('data/*.csv')
-    
-    print(f'Files to read: {files}')
+pd.set_option('display.max_colwidth', 300)
 
-    df = pd.concat((pd.read_csv(f) for f in files), ignore_index=True)
+
+def read_data():
+    df = pd.read_csv('data/booksummaries.txt', sep='\t', lineterminator='\n', names=[
+                     WIKIPEDIA_ID, FREEBASE_ID, TITLE, AUTHOR, PUBLICATION_DATE, GENRE, SUMMARY])
     return df
+
 
 def process_data(df):
     df_tokens = df \
-        .sort_values([TRACK_TITLE, LINE], ascending=[True, True]) \
         .pipe(tokenize) \
         .pipe(remove_stopwords) \
-        .filter([TOKENS])
-    
+        .filter([TITLE, TOKENS])
+
     print(f'Tokenized and removed stopwords for {df_tokens.shape[0]} records')
     return df_tokens
+
 
 def get_meta_data(df):
     all_tokens = pd.Series(itertools.chain.from_iterable(df[TOKENS].tolist()))
@@ -56,14 +65,17 @@ def get_meta_data(df):
 
     return word_to_id, vocab_size, corpus_size
 
+
 def tokenize(df):
-    df[TOKENS] = df[LYRIC] \
+    df[TOKENS] = df[SUMMARY] \
         .map(lambda l: l.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation)))) \
         .map(lambda l: l.lower()) \
         .map(lambda l: nltk.tokenize.word_tokenize(l))
     return df
 
+
 def remove_stopwords(df):
     stopwords = nltk.corpus.stopwords.words('english')
-    df[TOKENS] = df[TOKENS].map(lambda t: list(filter(lambda t: t not in stopwords, t)))
+    df[TOKENS] = df[TOKENS].map(lambda t: list(
+        filter(lambda t: t not in stopwords, t)))
     return df

@@ -49,4 +49,4 @@ class TestTrain(unittest.TestCase):
              [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
 
         train.train(np.array(X), np.array(y), 1000, 0.001, 5)        
-        
+        1

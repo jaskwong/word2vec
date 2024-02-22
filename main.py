@@ -11,18 +11,20 @@ def create_context_vector(vocab_size, word_to_id, words):
 
     return vec
 
+
 if __name__ == '__main__':
     df_data = data.read_data()
     df_processed = data.process_data(df_data)
     word_to_id, vocab_size, corpus_size = data.get_meta_data(df_processed)
     X, y = onehot.generate_training_data(df_processed, vocab_size, word_to_id, 10)
-    print(X)
-    model = train.train(X, y, 100, 0.001, 100) 
+    
+    # word embeddings and model
+    embeddings, model = train.train(X, y, 10, 0.001, 100)
 
-    id_to_word = inv_map = {v: k for k, v in word_to_id.items()}
-
-    test = create_context_vector(vocab_size, word_to_id, ["sensible", "incredible", "friends", "jealous", "respects"])  
-    pred = train.predict(model, np.array([[test]]))
-    pred_idx = np.argmax(pred)
-    print(id_to_word[pred_idx])
+    # sample use case
+    id_to_word = {v: k for k, v in word_to_id.items()}
+    x = create_context_vector(vocab_size, word_to_id, ['political', 'animals', 'human', 'government'])  
+    pred_x = train.predict(model, np.array([[x]]))
+    pred_x_idx = np.argmax(pred_x)
+    print(id_to_word[pred_x_idx])
 
